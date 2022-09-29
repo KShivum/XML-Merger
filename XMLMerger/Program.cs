@@ -33,24 +33,18 @@
             secondXML.Add(new XMLFile(path, fullFile, id));
         }
 
+        //TODO: Just replace this with firstXML
         List<XMLFile> mergedXML = new List<XMLFile>();
         //Adds all the files from the first XML file into the merged XML file
-        foreach(XMLFile file in firstXML)
-        {
-            mergedXML.Add(file);
-        }
+        mergedXML.AddRange(firstXML);
 
         //Adds all the files from the second XML file into a list
         foreach(XMLFile file in secondXML)
         {
-            if(firstXML.Any(x => x.id == file.id))
+            var foundFile = mergedXML.FirstOrDefault(x => x.path.Equals(file.path));
+            if(foundFile == null)
             {
-                if(firstXML.Any(x => x.path.Equals(file.path)))
-                {
-                    //Exists correctly
-                    continue;
-                }
-                else
+                if(firstXML.Any(x => x.id == file.id))
                 {
                     System.Console.WriteLine("Duplicate ID found, but different path. Adding file to merged XML with unique ID");
                     int newID = int.MaxValue;
@@ -65,7 +59,10 @@
             }
             else
             {
-                mergedXML.Add(file);
+                if(foundFile.id != file.id)
+                {
+                    System.Console.WriteLine("Duplicate path found, but different ID. Skipping file");
+                }
             }
         }
 
